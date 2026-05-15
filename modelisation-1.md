@@ -2,62 +2,61 @@
 
 ## Entités principales
 
-Auteur
+| Auteur         |
+| -------------- |
+| id_auteur      |
+| nom            |
+| prenom.        |
+| email.         |
+| date_naissance |
 
-id_auteur
-nom
-prenom
-email
-date_naissance
+| Editeur       |
+| ------------- |
+| id_editeur    |
+| nom           |
+| email_contact |
 
-Editeur
-
-id_editeur
-nom
-email_contact
-
-TypeOuvrage
-
-id_type
-libelle
+| TypeOuvrage |
+| ----------- |
+| id_type     |
+| libelle     |
 (Exemples : roman, essai, bande dessinée, manuel, livre audio.)
 
-Livre
+| Livre            |
+| ---------------- |
+| id_livre         |
+| titre            |
+| isbn             |
+| date_publication |
+| prix_ht          |
+| id_editeur       |
+| id_type          |
 
-id_livre
-titre
-isbn
-date_publication
-prix_ht
-id_editeur
-id_type
-
-Participation
-
-id_auteur
-id_livre
-role
-pourcentage_droits
-
+| Participation.     |
+| ------------------ |
+| id_auteur          |
+| id_livre           |
+| role               |
+| pourcentage_droits |
 (Cette entité associative permet de gérer les cas où plusieurs auteurs participent à un même livre.)
 
-VenteMensuelle
+| VenteMensuelle  |
+| --------------- |
+| id_vente        |
+| id_livre        |
+| mois            |
+| annee           |
+| quantite_vendue |
 
-id_vente
-id_livre
-mois
-annee
-quantite_vendue
-
-Redevance
-
-id_redevance
-id_auteur
-id_livre
-mois
-annee
-montant_calcule
-date_calcul
+| Redevance       |
+| --------------- |
+| id_redevance    |
+| id_auteur       |
+| id_livre        |
+| mois            |
+| annee           |
+| montant_calcule |
+| date_calcul     |
 
 ## Cardinalités du MCD
 
