@@ -20,7 +20,7 @@ TypeOuvrage
 
 id_type
 libelle
-Exemples : roman, essai, bande dessinée, manuel, livre audio.
+(Exemples : roman, essai, bande dessinée, manuel, livre audio.)
 
 Livre
 
@@ -39,7 +39,7 @@ id_livre
 role
 pourcentage_droits
 
-Cette entité associative permet de gérer les cas où plusieurs auteurs participent à un même livre.
+(Cette entité associative permet de gérer les cas où plusieurs auteurs participent à un même livre.)
 
 VenteMensuelle
 
