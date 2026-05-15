@@ -1,6 +1,6 @@
 # Phase 1 — Analyse conceptuelle
 
-Entités principales
+## Entités principales
 
 Auteur
 
@@ -59,7 +59,7 @@ annee
 montant_calcule
 date_calcul
 
-# Cardinalités du MCD
+## Cardinalités du MCD
 
 EDITEUR 1,n —— publier —— 1,1 LIVRE
 TYPE_OUVRAGE 1,n —— classifier —— 1,1 LIVRE
@@ -137,6 +137,7 @@ annee,
 montant_calcule,
 date_calcul
 )
+
 <img src="./images/modelisation_MLD.png" alt="Modélisation MLD" />
 
 # Phase 3 — Script SQL
@@ -296,7 +297,7 @@ a.prenom,
 l.titre,
 v.mois,
 v.annee,
-ROUND(l.prix_ht _ v.quantite_vendue _ p.pourcentage_droits / 100, 2) AS montant_redevance
+ROUND(l.prix*ht * v.quantite*vendue * p.pourcentage_droits / 100, 2) AS montant_redevance
 FROM participation p
 JOIN auteur a ON a.id_auteur = p.id_auteur
 JOIN livre l ON l.id_livre = p.id_livre
