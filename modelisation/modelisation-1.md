@@ -62,87 +62,33 @@
 
 ## Cardinalités du MCD
 
-EDITEUR 1,n —— publier —— 1,1 LIVRE
-TYPE_OUVRAGE 1,n —— classifier —— 1,1 LIVRE
-AUTEUR 0,n —— PARTICIPATION —— 1,n LIVRE
-LIVRE 0,n —— générer —— 1,1 VENTE_MENSUELLE
-AUTEUR 0,n —— recevoir —— 1,1 REDEVANCE
-LIVRE 0,n —— concerner —— 1,1 REDEVANCE
+- EDITEUR 1,n —— publier —— 1,1 LIVRE
+- TYPE_OUVRAGE 1,n —— classifier —— 1,1 LIVRE
+- AUTEUR 0,n —— PARTICIPATION —— 1,n LIVRE
+- LIVRE 0,n —— générer —— 1,1 VENTE_MENSUELLE
+- AUTEUR 0,n —— recevoir —— 1,1 REDEVANCE
+- LIVRE 0,n —— concerner —— 1,1 REDEVANCE
 
 # Contraintes métier
 
-Un livre appartient à un seul éditeur.
-Un livre possède un seul type d’ouvrage.
-Un livre peut avoir plusieurs auteurs.
-Un auteur peut participer à plusieurs livres.
-Le pourcentage de droits doit être compris entre 0 et 100.
-La somme des pourcentages pour un livre ne devrait pas dépasser 100 %.
-Une vente mensuelle est unique pour un livre, un mois et une année.
-Une redevance est unique pour un auteur, un livre, un mois et une année.
+- Un livre appartient à un seul éditeur.
+- Un livre possède un seul type d’ouvrage.
+- Un livre peut avoir plusieurs auteurs.
+- Un auteur peut participer à plusieurs livres.
+- Le pourcentage de droits doit être compris entre 0 et 100.
+- La somme des pourcentages pour un livre ne devrait pas dépasser 100 %.
+- Une vente mensuelle est unique pour un livre, un mois et une année.
+- Une redevance est unique pour un auteur, un livre, un mois et une année.
 
 <img src="./images/modelisation_MCD.png" alt="Modélisation MCD" />
 
 # Phase 2 — MLD
 
-AUTEUR(
-id_auteur PK,
-nom,
-prenom,
-email,
-date_naissance
-)
-
-EDITEUR(
-id_editeur PK,
-nom,
-email_contact
-)
-
-TYPE_OUVRAGE(
-id_type PK,
-libelle
-)
-
-LIVRE(
-id_livre PK,
-titre,
-isbn,
-date_publication,
-prix_ht,
-id_editeur FK → EDITEUR(id_editeur),
-id_type FK → TYPE_OUVRAGE(id_type)
-)
-
-PARTICIPATION(
-id_auteur FK → AUTEUR(id_auteur),
-id_livre FK → LIVRE(id_livre),
-role,
-pourcentage_droits,
-PK(id_auteur, id_livre)
-)
-
-VENTE_MENSUELLE(
-id_vente PK,
-id_livre FK → LIVRE(id_livre),
-mois,
-annee,
-quantite_vendue
-)
-
-REDEVANCE(
-id_redevance PK,
-id_auteur FK → AUTEUR(id_auteur),
-id_livre FK → LIVRE(id_livre),
-mois,
-annee,
-montant_calcule,
-date_calcul
-)
-
 <img src="./images/modelisation_MLD.png" alt="Modélisation MLD" />
 
 # Phase 3 — Script SQL
 
+```SQL
 CREATE TABLE auteur (
 id_auteur SERIAL PRIMARY KEY,
 nom VARCHAR(100) NOT NULL,
@@ -284,7 +230,8 @@ INSERT INTO redevance (id_auteur, id_livre, mois, annee, montant_calcule) VALUES
 (1, 1, 4, 2026, 2400.00),
 (2, 2, 4, 2026, 1568.00),
 (3, 2, 4, 2026, 672.00);
-Exemple de calcul des redevances
+```
+# Exemple de calcul des redevances
 
 Hypothèse simple :
 
@@ -292,6 +239,7 @@ redevance = prix_ht × quantité_vendue × pourcentage_droits / 100
 
 Requête possible :
 
+```SQL
 SELECT
 a.nom,
 a.prenom,
@@ -303,7 +251,9 @@ FROM participation p
 JOIN auteur a ON a.id_auteur = p.id_auteur
 JOIN livre l ON l.id_livre = p.id_livre
 JOIN vente_mensuelle v ON v.id_livre = l.id_livre;
-Choix de modélisation
+```
+
+# Choix de modélisation
 
 Le modèle utilise une table participation pour gérer les livres écrits par plusieurs auteurs. Cela permet d’attribuer un rôle et un pourcentage de droits différent à chaque auteur.
 
