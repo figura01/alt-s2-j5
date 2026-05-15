@@ -96,10 +96,21 @@ Cela évite que WordPress tente une connexion avant que MySQL soit prêt.
 
 ```YAML
 healthcheck:
-  test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD}"]
-  interval: 10s
-  timeout: 5s
-  retries: 5
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping -h 127.0.0.1 -uroot -p$${MYSQL_ROOT_PASSWORD} || exit 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+```
+Et ajouter la dependence au service wordpress
+```YAML
+  depends_on:
+    mysql:
+      condition: service_healthy
 ```
 
 ## 6. Ajouter une politique de redémarrage
@@ -113,7 +124,7 @@ Permet :
 
 
 # 4. Commandes de test
-```docker
+```bash
 docker compose down -v
 docker compose up -d
 docker compose logs mysql
@@ -123,7 +134,7 @@ docker compose ps
 
 # Tester MySQL :
 
-```docker
+```bash
 docker compose exec mysql mysql -uwordpress_user -pwordpress_password_secure wordpress
 ```
 
