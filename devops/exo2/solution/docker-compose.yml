@@ -1,0 +1,69 @@
+services:
+  nextcloud:
+    image: nextcloud:latest
+    container_name: nextcloud_app
+    ports:
+      - "8080:80"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: postgres
+      REDIS_HOST: redis
+    volumes:
+      - nextcloud_data:/var/www/html
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - nextcloud_network
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'php -r ''exit(file_get_contents("http://localhost/status.php") ? 0 : 1);''',
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:13
+    container_name: nextcloud_postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - nextcloud_network
+    restart: unless-stopped
+
+  redis:
+    image: redis:alpine
+    container_name: nextcloud_redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - nextcloud_network
+    restart: unless-stopped
+
+volumes:
+  nextcloud_data:
+  postgres_data:
+  redis_data:
+
+networks:
+  nextcloud_network:
+    driver: bridge
