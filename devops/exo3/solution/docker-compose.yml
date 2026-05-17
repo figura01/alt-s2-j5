@@ -1,0 +1,67 @@
+services:
+  mattermost:
+    image: mattermost/mattermost-team-edition:latest
+    platform: linux/amd64
+    container_name: mattermost_app
+
+    ports:
+      - "8065:8065"
+
+    env_file:
+      - .env
+
+    environment:
+      MM_SQLSETTINGS_DRIVERNAME: postgres
+      MM_SQLSETTINGS_DATASOURCE: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
+      MM_SERVICESETTINGS_SITEURL: http://localhost:8065
+
+    volumes:
+      - mattermost_data:/mattermost/data
+      - mattermost_logs:/mattermost/logs
+      - mattermost_plugins:/mattermost/plugins
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    networks:
+      - mattermost_network
+
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15
+    container_name: mattermost_postgres
+
+    env_file:
+      - .env
+
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+    networks:
+      - mattermost_network
+
+    restart: unless-stopped
+
+volumes:
+  mattermost_data:
+  mattermost_logs:
+  mattermost_plugins:
+  postgres_data:
+
+networks:
+  mattermost_network:
+    driver: bridge
